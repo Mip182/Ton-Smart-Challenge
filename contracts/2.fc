@@ -46,5 +46,3 @@ forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
 
   return result;
 }
-
-
