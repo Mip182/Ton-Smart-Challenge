@@ -26,5 +26,25 @@ forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
 
   tuple result = empty_tuple();
 
+  int i = 0;
+  while (i < n) {
+    int f = 0;
+    tuple row = empty_tuple();
+    while (f < k) {
+      int sum = 0;
+      int c = 0;
+      while (c < m) {
+        sum += matrixA.at(i).at(c) * matrixB.at(c).at(f)
+        c += 1;
+      }
+      row~tpush(sum);
+      f += 1;
+    }
+    result~tpush(row);
+    i += 1;
+  }
+
   return result;
 }
+
+
