@@ -30,6 +30,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
     shift = shift % 256;
+    shift = (shift + 256) % 256;
     slice cur_slice = text.begin_parse();
     int sz = slice_bits(cur_slice);
 
@@ -87,6 +88,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
     shift = shift % 256;
+    shift = (shift + 256) % 256;
     slice cur_slice = text.begin_parse();
     int sz = slice_bits(cur_slice);
 
