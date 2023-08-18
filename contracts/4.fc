@@ -27,6 +27,15 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
     return (new_val, cur_size + 8);
 }
 
+(int) shifted_char(int shift, int char) {
+    if ((char >= 65) & (char <= 90)) {
+        char = 65 + (char - 65 + shift) % 26;
+    } elseif ((char >= 97) & (char <= 122)) {
+        char = 97 + (char - 97 + shift) % 26;
+    }
+    return char;
+}
+
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
     shift = shift % 26;
@@ -45,11 +54,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
     while (sz > 0) {
         int char = cur_slice~load_uint(8);
         sz -= 8;
-        if ((char >= 65) & (char <= 90)) {
-            char = 65 + (char - 65 + shift) % 26;
-        } elseif ((char >= 97) & (char <= 122)) {
-            char = 97 + (char - 97 + shift) % 26;
-        }
+        char = shifted_char(shift, char);
         characters~tpush(char);
     }
     while (cur_slice.slice_refs_empty?() != -1) {
@@ -59,11 +64,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
         while (sz > 0) {
             int char = cur_slice~load_uint(8);
             sz -= 8;
-            if ((char >= 65) & (char <= 90)) {
-                char = 65 + (char - 65 + shift) % 26;
-            } elseif ((char >= 97) & (char <= 122)) {
-                char = 97 + (char - 97 + shift) % 26;
-            }
+            char = shifted_char(shift, char);
             characters~tpush(char);
         }
     }
@@ -75,15 +76,10 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
     builder cur_cell = begin_cell();
     while (total_size > 0) {
         total_size -= last_size;
-        int now_val = 0;
-        int now_size = 0;
-        int was_last_size = last_size;
         while (last_size > 0) {
-            int char = characters~tpop();
-            (now_val, now_size) = add_to_begin(now_val, now_size, char);
             last_size -= 1;
+            cur_cell~store_uint(characters.at(total_size + last_size), 8);
         }
-        cur_cell~store_uint(now_val, was_last_size * 8);
         last_size = 127;
         if (total_size > 0) {
             cell next_cell = cur_cell.end_cell();
@@ -113,11 +109,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
     while (sz > 0) {
         int char = cur_slice~load_uint(8);
         sz -= 8;
-        if ((char >= 65) & (char <= 90)) {
-            char = 65 + (char - 65 + shift) % 26;
-        } elseif ((char >= 97) & (char <= 122)) {
-            char = 97 + (char - 97 + shift) % 26;
-        }
+        char = shifted_char(shift, char);
         characters~tpush(char);
     }
     while (cur_slice.slice_refs_empty?() != -1) {
@@ -127,11 +119,7 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
         while (sz > 0) {
             int char = cur_slice~load_uint(8);
             sz -= 8;
-            if ((char >= 65) & (char <= 90)) {
-                char = 65 + (char - 65 + shift) % 26;
-            } elseif ((char >= 97) & (char <= 122)) {
-                char = 97 + (char - 97 + shift) % 26;
-            }
+            char = shifted_char(shift, char);
             characters~tpush(char);
         }
     }
@@ -143,15 +131,10 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
     builder cur_cell = begin_cell();
     while (total_size > 0) {
         total_size -= last_size;
-        int now_val = 0;
-        int now_size = 0;
-        int was_last_size = last_size;
         while (last_size > 0) {
-            int char = characters~tpop();
-            (now_val, now_size) = add_to_begin(now_val, now_size, char);
             last_size -= 1;
+            cur_cell~store_uint(characters.at(total_size + last_size), 8);
         }
-        cur_cell~store_uint(now_val, was_last_size * 8);
         last_size = 127;
         if (total_size > 0) {
             cell next_cell = cur_cell.end_cell();
