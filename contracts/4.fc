@@ -77,11 +77,13 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
         total_size -= last_size;
         int now_val = 0;
         int now_size = 0;
+        int was_last_size = last_size;
         while (last_size > 0) {
             int char = characters~tpop();
             (now_val, now_size) = add_to_begin(now_val, now_size, char);
             last_size -= 1;
         }
+        cur_cell~store_uint(now_val, was_last_size * 8);
         last_size = 127;
         if (total_size > 0) {
             cell next_cell = cur_cell.end_cell();
@@ -143,11 +145,13 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
         total_size -= last_size;
         int now_val = 0;
         int now_size = 0;
+        int was_last_size = last_size;
         while (last_size > 0) {
             int char = characters~tpop();
             (now_val, now_size) = add_to_begin(now_val, now_size, char);
             last_size -= 1;
         }
+        cur_cell~store_uint(now_val, was_last_size * 8);
         last_size = 127;
         if (total_size > 0) {
             cell next_cell = cur_cell.end_cell();
