@@ -23,7 +23,6 @@ forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
   tuple result = empty_tuple();
   int x = 0;
   int y = 1;
-  k += 1;
   if (n == 0) {
     result~tpush(x);
     k -= 1;
