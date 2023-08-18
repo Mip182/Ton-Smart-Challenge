@@ -76,9 +76,10 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
     builder cur_cell = begin_cell();
     while (total_size > 0) {
         total_size -= last_size;
+        int was_last_size = last_size;
         while (last_size > 0) {
+            cur_cell~store_uint(characters.at(total_size + was_last_size - last_size), 8);
             last_size -= 1;
-            cur_cell~store_uint(characters.at(total_size + last_size), 8);
         }
         last_size = 127;
         if (total_size > 0) {
@@ -131,9 +132,10 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
     builder cur_cell = begin_cell();
     while (total_size > 0) {
         total_size -= last_size;
+        int was_last_size = last_size;
         while (last_size > 0) {
+            cur_cell~store_uint(characters.at(total_size + was_last_size - last_size), 8);
             last_size -= 1;
-            cur_cell~store_uint(characters.at(total_size + last_size), 8);
         }
         last_size = 127;
         if (total_size > 0) {
