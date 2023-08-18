@@ -45,7 +45,6 @@ tuple empty_tuple() asm "NIL";
 builder store_ref(builder b, cell c) asm(c b) "STREF";
 forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
 (int) tlen(tuple t) asm "TLEN";
-(int) ubitsize(int a) asm "UBITSIZE";
 int slice_bits(slice s) asm "SBITS";
 
 
@@ -126,8 +125,18 @@ int slice_bits(slice s) asm "SBITS";
 }
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-    int flag_sz = ubitsize(flag);
-    int value_sz = ubitsize(value);
+    int flag_sz = 140;
+    while ((flag_sz > 0) & ((flag >> flag_sz) & 1) == 0) {
+        flag_sz -= 1;
+    }
+    flag_sz += 1;
+
+    int value_sz = 140;
+    while ((value_sz > 0) & ((value >> value_sz) & 1) == 0) {
+        value_sz -= 1;
+    }
+    value_sz += 1;
+
     slice cur_slice = linked_list.begin_parse();
 
     builder first_cell = begin_cell();
