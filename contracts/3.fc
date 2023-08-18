@@ -52,9 +52,9 @@ int slice_bits(slice s) asm "SBITS";
 (cell) get_next_cell(int flag, int value, int flag_sz, int value_sz, slice cur_slice, builder first_cell) {
     int cur_slice_bits = slice_bits(cur_slice);
     int our_cell_bits = 0;
-    int block_size = 1023 - 2 * value_sz;
+    int block_size = 1023 - value_sz;
     if (value_sz < flag_sz) {
-        block_size = 1023 - 2 * flag_sz;
+        block_size = 1023 - flag_sz;
     }
 
     builder next_cell = begin_cell();
@@ -83,10 +83,10 @@ int slice_bits(slice s) asm "SBITS";
             cell next = next_cell.end_cell();
             first_cell = first_cell.store_ref(next);
         } else {
-            if (our_cell_bits > 0) {
-                cell next = get_next_cell(flag, value, flag_sz, value_sz, cur_slice, next_cell);
-                first_cell = first_cell.store_ref(next);
-            } else {
+;;            if (our_cell_bits > 0) {
+;;                cell next = get_next_cell(flag, value, flag_sz, value_sz, cur_slice, next_cell);
+;;                first_cell = first_cell.store_ref(next);
+;;            } else {
                 cell inner_cell = cur_slice~load_ref();
                 slice inner_slice = inner_cell.begin_parse();
                 int inner_slice_bits = slice_bits(inner_slice);
@@ -118,7 +118,7 @@ int slice_bits(slice s) asm "SBITS";
                 }
                 cell next = get_next_cell(flag, value, flag_sz, value_sz, inner_slice, next_cell);
                 first_cell = first_cell.store_ref(next);
-            }
+;;            }
         }
     }
 
@@ -143,9 +143,9 @@ int slice_bits(slice s) asm "SBITS";
     builder first_cell = begin_cell();
     int cur_slice_bits = slice_bits(cur_slice);
     int our_cell_bits = 0;
-    int block_size = 1023 - 2 * value_sz;
+    int block_size = 1023 - value_sz;
     if (value_sz < flag_sz) {
-        block_size = 1023 - 2 * flag_sz;
+        block_size = 1023 - flag_sz;
     }
 
     while ((cur_slice_bits >= flag_sz) & (our_cell_bits < block_size)) {
