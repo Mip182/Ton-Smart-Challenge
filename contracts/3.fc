@@ -75,7 +75,7 @@ int slice_bits(slice s) asm "SBITS";
         cell next = get_next_cell(flag, value, flag_sz, value_sz, cur_slice, next_cell);
         first_cell = first_cell.store_ref(next);
     } elseif (cur_slice_bits < flag_sz) {
-        if (cur_slice.slice_refs_empty?() == 0) {
+        if (cur_slice.slice_refs_empty?() == -1) {
             if (cur_slice_bits > 0) {
                 next_cell~store_uint(cur_slice~load_int(cur_slice_bits), cur_slice_bits);
             }
