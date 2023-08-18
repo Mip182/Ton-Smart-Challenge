@@ -45,12 +45,10 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
     while (sz > 0) {
         int char = cur_slice~load_uint(8);
         sz -= 8;
-        if (char >= 65 & char <= 90) {
+        if ((char >= 65) & (char <= 90)) {
             char = 65 + (char - 65 + shift) % 26;
-        } else {
-            if (char >= 97 & char <= 122) {
-                char = 97 + (char - 97 + shift) % 26;
-            }
+        } elseif ((char >= 97) & (char <= 122)) {
+            char = 97 + (char - 97 + shift) % 26;
         }
         characters~tpush(char);
     }
@@ -61,12 +59,10 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
         while (sz > 0) {
             int char = cur_slice~load_uint(8);
             sz -= 8;
-            if (char >= 65 & char <= 90) {
+            if ((char >= 65) & (char <= 90)) {
                 char = 65 + (char - 65 + shift) % 26;
-            } else {
-                if (char >= 97 & char <= 122) {
-                    char = 97 + (char - 97 + shift) % 26;
-                }
+            } elseif ((char >= 97) & (char <= 122)) {
+                char = 97 + (char - 97 + shift) % 26;
             }
             characters~tpush(char);
         }
@@ -115,12 +111,10 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
     while (sz > 0) {
         int char = cur_slice~load_uint(8);
         sz -= 8;
-        if (char >= 65 & char <= 90) {
+        if ((char >= 65) & (char <= 90)) {
             char = 65 + (char - 65 + shift) % 26;
-        } else {
-            if (char >= 97 & char <= 122) {
-                char = 97 + (char - 97 + shift) % 26;
-            }
+        } elseif ((char >= 97) & (char <= 122)) {
+            char = 97 + (char - 97 + shift) % 26;
         }
         characters~tpush(char);
     }
@@ -131,12 +125,10 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
         while (sz > 0) {
             int char = cur_slice~load_uint(8);
             sz -= 8;
-            if (char >= 65 & char <= 90) {
+            if ((char >= 65) & (char <= 90)) {
                 char = 65 + (char - 65 + shift) % 26;
-            } else {
-                if (char >= 97 & char <= 122) {
-                    char = 97 + (char - 97 + shift) % 26;
-                }
+            } elseif ((char >= 97) & (char <= 122)) {
+                char = 97 + (char - 97 + shift) % 26;
             }
             characters~tpush(char);
         }
