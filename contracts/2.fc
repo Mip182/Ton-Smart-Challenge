@@ -14,7 +14,6 @@
 
 (int) tlen(tuple t) asm "TLEN";
 tuple empty_tuple() asm "NIL";
-forall X -> (tuple) to_tuple(X x) asm "NOP";
 forall X -> tuple tpush(tuple t, X value) asm "TPUSH";
 forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
 

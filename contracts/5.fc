@@ -16,6 +16,8 @@
 () recv_internal() {
 }
 
+tuple empty_tuple() asm "NIL";
+
 ;; testable
 (tuple) fibonacci_sequence (int n, int k) method_id {
   return null();
