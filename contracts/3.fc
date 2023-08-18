@@ -32,8 +32,14 @@
 () recv_internal() {
 }
 
+(int) ubitsize (int a) asm "UBITSIZE";
+builder begin_cell() asm "NEWC";
+cell end_cell(builder b) asm "ENDC";
+
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
+;;  int flag_sz = ubitsize(flag);
+;;  int value_sz =  ubitsize(value);
   return begin_cell().end_cell();
 }
 
