@@ -32,14 +32,126 @@
 () recv_internal() {
 }
 
-(int) ubitsize (int a) asm "UBITSIZE";
 builder begin_cell() asm "NEWC";
 cell end_cell(builder b) asm "ENDC";
+slice begin_parse(cell c) asm "CTOS";
+int slice_refs_empty?(slice s) asm "SREMPTY";
+int slice_bits(slice s) asm "SBITS";
+(slice, ()) ~skip_bits(slice s, int len) asm "SDSKIPFIRST";
+forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
+tuple empty_tuple() asm "NIL";
+(slice, cell) load_ref(slice s) asm(-> 1 0) "LDREF";
+(int) tlen(tuple t) asm "TLEN";
+builder store_ref(builder b, cell c) asm(c b) "STREF";
+forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
+(int) tlen(tuple t) asm "TLEN";
+(int) ubitsize(int a) asm "UBITSIZE";
+int slice_bits(slice s) asm "SBITS";
 
+
+(cell) get_next_cell(int flag, int value, int flag_sz, int value_sz, slice cur_slice, builder first_cell) {
+    int cur_slice_bits = slice_bits(cur_slice);
+    int our_cell_bits = 0;
+    int block_size = 1023 - value_sz;
+    if (value_sz < flag_sz) {
+        block_size = 1023 - flag_sz;
+    }
+
+    builder next_cell = begin_cell();
+    while ((cur_slice_bits >= flag_sz) & (our_cell_bits < block_size)) {
+        int check = cur_slice.preload_uint(flag_sz);
+        if (check == flag) {
+            cur_slice~skip_bits(flag_sz);
+            next_cell~store_uint(value, value_sz);
+            cur_slice_bits -= flag_sz;
+            our_cell_bits += value_sz;
+        } else {
+            next_cell~store_uint(cur_slice~load_int(1), 1);
+            cur_slice_bits -= 1;
+            our_cell_bits += 1;
+        }
+    }
+
+    if (our_cell_bits >= block_size) {
+        cell next = get_next_cell(flag, value, flag_sz, value_sz, cur_slice, next_cell);
+        first_cell = first_cell.store_ref(next);
+    } elseif (cur_slice_bits < flag_sz) {
+        if (cur_slice.slice_refs_empty?() == 0) {
+            if (cur_slice_bits > 0) {
+                next_cell~store_uint(cur_slice~load_int(cur_slice_bits), cur_slice_bits);
+            }
+            cell next = next_cell.end_cell();
+            first_cell = first_cell.store_ref(next);
+        } else {
+            if (our_cell_bits > 0) {
+                cell next = get_next_cell(flag, value, flag_sz, value_sz, cur_slice, next_cell);
+                first_cell = first_cell.store_ref(next);
+            } else {
+                cell inner_cell = cur_slice~load_ref();
+                slice inner_slice = inner_cell.begin_parse();
+                int inner_slice_bits = slice_bits(inner_slice);
+                while (cur_slice_bits > 0) {
+                    if (cur_slice_bits + inner_slice_bits < flag_sz) {
+                        next_cell~store_uint(cur_slice~load_int(cur_slice_bits), cur_slice_bits);
+                        next_cell~store_uint(inner_slice~load_int(inner_slice_bits), inner_slice_bits);
+                        cell next = next_cell.end_cell();
+                        first_cell = first_cell.store_ref(next);
+                        return first_cell.end_cell();
+                    }
+
+                    int left = cur_slice.preload_uint(cur_slice_bits);
+                    int right = inner_slice.preload_uint(flag_sz - cur_slice_bits);
+                    int check = (left << (flag_sz - cur_slice_bits)) + right;
+
+                    if (check == flag) {
+                        cur_slice~skip_bits(cur_slice_bits);
+                        inner_slice~skip_bits(flag_sz - cur_slice_bits);
+                        next_cell~store_uint(value, value_sz);
+                        inner_slice_bits -= flag_sz - cur_slice_bits;
+                        cur_slice_bits = 0;
+                        our_cell_bits += value_sz;
+                    } else {
+                        next_cell~store_uint(cur_slice~load_int(1), 1);
+                        cur_slice_bits -= 1;
+                        our_cell_bits += 1;
+                    }
+                }
+                cell next = get_next_cell(flag, value, flag_sz, value_sz, inner_slice, next_cell);
+                first_cell = first_cell.store_ref(next);
+            }
+        }
+    }
+
+    return first_cell.end_cell();
+}
 ;; testable
 (cell) find_and_replace(int flag, int value, cell linked_list) method_id {
-;;  int flag_sz = ubitsize(flag);
-;;  int value_sz =  ubitsize(value);
-  return begin_cell().end_cell();
+    int flag_sz = ubitsize(flag);
+    int value_sz = ubitsize(value);
+    slice cur_slice = linked_list.begin_parse();
+
+    builder first_cell = begin_cell();
+    int cur_slice_bits = slice_bits(cur_slice);
+    int our_cell_bits = 0;
+    int block_size = 1023 - value_sz;
+    if (value_sz < flag_sz) {
+        block_size = 1023 - flag_sz;
+    }
+
+    while ((cur_slice_bits >= flag_sz) & (our_cell_bits < block_size)) {
+        int check = cur_slice.preload_uint(flag_sz);
+        if (check == flag) {
+            cur_slice~skip_bits(flag_sz);
+            first_cell~store_uint(value, value_sz);
+            cur_slice_bits -= flag_sz;
+            our_cell_bits += value_sz;
+        } else {
+            first_cell~store_uint(cur_slice~load_int(1), 1);
+            cur_slice_bits -= 1;
+            our_cell_bits += 1;
+        }
+    }
+
+    return get_next_cell(flag, value, flag_sz, value_sz, cur_slice, first_cell);
 }
 
