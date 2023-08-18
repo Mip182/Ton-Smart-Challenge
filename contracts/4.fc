@@ -40,11 +40,11 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
 (cell) deep_into(builder cur_cell, slice cur_slice, int shift) {
     if (cur_slice.slice_refs_empty?() != -1) {
         cell inner_cell = cur_slice~load_ref();
-        cur_slice = inner_cell.begin_parse();
-        int sz = slice_bits(cur_slice);
+        slice inner_slice = inner_cell.begin_parse();
+        int sz = slice_bits(inner_slice);
         tuple characters = empty_tuple();
         while (sz > 0) {
-            int char = cur_slice~load_uint(8);
+            int char = inner_slice~load_uint(8);
             sz -= 8;
             char = shifted_char(shift, char);
             characters~tpush(char);
@@ -52,17 +52,15 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
 
         sz = tlen(characters);
         int last_size = sz;
-        builder cur_cell = begin_cell();
+        builder inner_cell = begin_cell();
         while (last_size > 0) {
-            cur_cell~store_uint(characters.at(sz - last_size), 8);
+            inner_cell~store_uint(characters.at(sz - last_size), 8);
             last_size -= 1;
         }
-
-        return deep_into(cur_cell, cur_slice, shift);
+        cell next_cell = deep_into(inner_cell, inner_slice, shift);
+        cur_cell = cur_cell.store_ref(next_cell);
     }
-    else {
-        return cur_cell.end_cell();
-    }
+    return cur_cell.end_cell();
 }
 
 ;; testable
@@ -93,30 +91,30 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
     while (last_size > 0) {
         cur_cell~store_uint(characters.at(sz - last_size), 8);
         last_size -= 1;
-     }
+    }
 
     return deep_into(cur_cell, cur_slice, shift);
-;;    int total_size = tlen(characters);
-;;    int last_size = total_size % 127;
-;;    if (last_size == 0) {
-;;        last_size = 127;
-;;    }
-;;    builder cur_cell = begin_cell();
-;;    while (total_size > 0) {
-;;        total_size -= last_size;
-;;        int was_last_size = last_size;
-;;        while (last_size > 0) {
-;;            cur_cell~store_uint(characters.at(total_size + was_last_size - last_size), 8);
-;;            last_size -= 1;
-;;        }
-;;        last_size = 127;
-;;        if (total_size > 0) {
-;;            cell next_cell = cur_cell.end_cell();
-;;            cur_cell = begin_cell();
-;;            cur_cell = cur_cell.store_ref(next_cell);
-;;        }
-;;    }
-;;    return cur_cell.end_cell();
+    ;;    int total_size = tlen(characters);
+    ;;    int last_size = total_size % 127;
+    ;;    if (last_size == 0) {
+    ;;        last_size = 127;
+    ;;    }
+    ;;    builder cur_cell = begin_cell();
+    ;;    while (total_size > 0) {
+    ;;        total_size -= last_size;
+    ;;        int was_last_size = last_size;
+    ;;        while (last_size > 0) {
+    ;;            cur_cell~store_uint(characters.at(total_size + was_last_size - last_size), 8);
+    ;;            last_size -= 1;
+    ;;        }
+    ;;        last_size = 127;
+    ;;        if (total_size > 0) {
+    ;;            cell next_cell = cur_cell.end_cell();
+    ;;            cur_cell = begin_cell();
+    ;;            cur_cell = cur_cell.store_ref(next_cell);
+    ;;        }
+    ;;    }
+    ;;    return cur_cell.end_cell();
 }
 
 ;; testable
