@@ -94,27 +94,6 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
     }
 
     return deep_into(cur_cell, cur_slice, shift);
-    ;;    int total_size = tlen(characters);
-    ;;    int last_size = total_size % 127;
-    ;;    if (last_size == 0) {
-    ;;        last_size = 127;
-    ;;    }
-    ;;    builder cur_cell = begin_cell();
-    ;;    while (total_size > 0) {
-    ;;        total_size -= last_size;
-    ;;        int was_last_size = last_size;
-    ;;        while (last_size > 0) {
-    ;;            cur_cell~store_uint(characters.at(total_size + was_last_size - last_size), 8);
-    ;;            last_size -= 1;
-    ;;        }
-    ;;        last_size = 127;
-    ;;        if (total_size > 0) {
-    ;;            cell next_cell = cur_cell.end_cell();
-    ;;            cur_cell = begin_cell();
-    ;;            cur_cell = cur_cell.store_ref(next_cell);
-    ;;        }
-    ;;    }
-    ;;    return cur_cell.end_cell();
 }
 
 ;; testable
