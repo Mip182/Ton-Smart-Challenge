@@ -26,7 +26,7 @@ slice begin_parse(cell c) asm "CTOS";
     }
     slice s_slice = s.begin_parse();
     repeat (s_slice.slice_refs()) {
-        (cell maybe, int is) = find_best_cell(hash, s~load_ref());
+        (cell maybe, int is) = find_best_cell(hash, s_slice~load_ref());
         if (is == 1) {
             return (maybe, is);
         }
