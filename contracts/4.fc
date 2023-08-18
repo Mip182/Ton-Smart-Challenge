@@ -29,8 +29,8 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
 
 ;; testable
 (cell) caesar_cipher_encrypt(int shift, cell text) method_id {
-    shift = shift % 256;
-    shift = (shift + 256) % 256;
+    shift = shift % 26;
+    shift = (shift + 26) % 26;
     slice cur_slice = text.begin_parse();
     int sz = slice_bits(cur_slice);
 
@@ -41,12 +41,17 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
     characters~tpush(0);
     characters~tpush(0);
     characters~tpush(0);
-    characters~tpush(255);
 
     while (sz > 0) {
         int char = cur_slice~load_uint(8);
         sz -= 8;
-        char = (char + shift) % 256;
+        if (char >= 65 & char <= 90) {
+            char = 65 + (char - 65 + shift) % 26;
+        } else {
+            if (char >= 97 & char <= 122) {
+                char = 97 + (char - 97 + shift) % 26;
+            }
+        }
         characters~tpush(char);
     }
     while (cur_slice.slice_refs_empty?() != -1) {
@@ -56,7 +61,13 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
         while (sz > 0) {
             int char = cur_slice~load_uint(8);
             sz -= 8;
-            char = (char + shift) % 256;
+            if (char >= 65 & char <= 90) {
+                char = 65 + (char - 65 + shift) % 26;
+            } else {
+                if (char >= 97 & char <= 122) {
+                    char = 97 + (char - 97 + shift) % 26;
+                }
+            }
             characters~tpush(char);
         }
     }
@@ -87,15 +98,14 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
 
 ;; testable
 (cell) caesar_cipher_decrypt(int shift, cell text) method_id {
-    shift = shift % 256;
-    shift = (shift + 256) % 256;
+    shift = shift % 26;
+    shift = (shift + 26) % 26;
+    shift = (26 - shift) % 26;
     slice cur_slice = text.begin_parse();
     int sz = slice_bits(cur_slice);
 
     cur_slice~skip_bits(32);
     sz -= 32;
-    cur_slice~skip_bits(8);
-    sz -= 8;
     tuple characters = empty_tuple();
     characters~tpush(0);
     characters~tpush(0);
@@ -105,7 +115,13 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
     while (sz > 0) {
         int char = cur_slice~load_uint(8);
         sz -= 8;
-        char = (char + 256 - shift) % 256;
+        if (char >= 65 & char <= 90) {
+            char = 65 + (char - 65 + shift) % 26;
+        } else {
+            if (char >= 97 & char <= 122) {
+                char = 97 + (char - 97 + shift) % 26;
+            }
+        }
         characters~tpush(char);
     }
     while (cur_slice.slice_refs_empty?() != -1) {
@@ -115,7 +131,13 @@ forall X -> (tuple, X) ~tpop(tuple t) asm "TPOP";
         while (sz > 0) {
             int char = cur_slice~load_uint(8);
             sz -= 8;
-            char = (char + shift) % 256;
+            if (char >= 65 & char <= 90) {
+                char = 65 + (char - 65 + shift) % 26;
+            } else {
+                if (char >= 97 & char <= 122) {
+                    char = 97 + (char - 97 + shift) % 26;
+                }
+            }
             characters~tpush(char);
         }
     }
