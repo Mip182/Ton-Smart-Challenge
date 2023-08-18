@@ -65,7 +65,7 @@ int slice_bits(slice s) asm "SBITS";
             cur_slice_bits -= flag_sz;
             our_cell_bits += value_sz;
         } else {
-            next_cell~store_uint(cur_slice~load_int(1), 1);
+            next_cell~store_uint(cur_slice~load_uint(1), 1);
             cur_slice_bits -= 1;
             our_cell_bits += 1;
         }
@@ -77,7 +77,7 @@ int slice_bits(slice s) asm "SBITS";
     } elseif (cur_slice_bits < flag_sz) {
         if (cur_slice.slice_refs_empty?() == -1) {
             if (cur_slice_bits > 0) {
-                next_cell~store_uint(cur_slice~load_int(cur_slice_bits), cur_slice_bits);
+                next_cell~store_uint(cur_slice~load_uint(cur_slice_bits), cur_slice_bits);
             }
             cell next = next_cell.end_cell();
             first_cell = first_cell.store_ref(next);
@@ -91,8 +91,8 @@ int slice_bits(slice s) asm "SBITS";
                 int inner_slice_bits = slice_bits(inner_slice);
                 while (cur_slice_bits > 0) {
                     if (cur_slice_bits + inner_slice_bits < flag_sz) {
-                        next_cell~store_uint(cur_slice~load_int(cur_slice_bits), cur_slice_bits);
-                        next_cell~store_uint(inner_slice~load_int(inner_slice_bits), inner_slice_bits);
+                        next_cell~store_uint(cur_slice~load_uint(cur_slice_bits), cur_slice_bits);
+                        next_cell~store_uint(inner_slice~load_uint(inner_slice_bits), inner_slice_bits);
                         cell next = next_cell.end_cell();
                         first_cell = first_cell.store_ref(next);
                         return first_cell.end_cell();
@@ -110,7 +110,7 @@ int slice_bits(slice s) asm "SBITS";
                         cur_slice_bits = 0;
                         our_cell_bits += value_sz;
                     } else {
-                        next_cell~store_uint(cur_slice~load_int(1), 1);
+                        next_cell~store_uint(cur_slice~load_uint(1), 1);
                         cur_slice_bits -= 1;
                         our_cell_bits += 1;
                     }
@@ -155,7 +155,7 @@ int slice_bits(slice s) asm "SBITS";
             cur_slice_bits -= flag_sz;
             our_cell_bits += value_sz;
         } else {
-            first_cell~store_uint(cur_slice~load_int(1), 1);
+            first_cell~store_uint(cur_slice~load_uint(1), 1);
             cur_slice_bits -= 1;
             our_cell_bits += 1;
         }
