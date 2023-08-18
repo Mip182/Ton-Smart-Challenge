@@ -23,9 +23,10 @@ forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
   tuple result = empty_tuple();
   int x = 0;
   int y = 1;
+  int f = 1;
   if (n == 0) {
     result~tpush(x);
-    k -= 1;
+    f -= 1;
   }
   int cur = 1;
   while (cur < n) {
@@ -34,7 +35,7 @@ forall X -> (tuple, ()) ~tpush(tuple t, X value) asm "TPUSH";
     x = z;
     cur += 1;
   }
-  while (k + 1 > 0) {
+  while (k + f > 0) {
     result~tpush(y);
     int z = y;
     y += x;
